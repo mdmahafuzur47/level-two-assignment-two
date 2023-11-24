@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from 'express';
 import { userServices } from './user.service';
+import { UserZodSchema } from './user.validator';
 
 const createUser = async (req: Request, res: Response) => {
   try {
     const userData = req.body;
-    const result = await userServices.createUser(userData);
+    const zodValidateData = UserZodSchema.parse(userData);
+    const result = await userServices.createUser(zodValidateData);
     res.status(200).json({
       success: true,
       message: 'User created successfully!',
@@ -17,7 +19,7 @@ const createUser = async (req: Request, res: Response) => {
       message: 'Something Want Worng!!',
       error: {
         code: 500,
-        description: `${error.message} | User not found!`,
+        description: error.message,
       },
     });
   }
@@ -37,7 +39,7 @@ const getallUsers = async (req: Request, res: Response) => {
       message: 'Something Want Worng!!',
       error: {
         code: 500,
-        description: `${error.message} | User not found!`,
+        description: error.message,
       },
     });
   }
@@ -47,25 +49,104 @@ const getSingleData = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const result = await userServices.getSingleData(id);
-    res.status(200).json({
-      success: true,
-      message: 'Single User fetched successfully!',
-      data: result,
-    });
+    if (result) {
+      res.status(200).json({
+        success: true,
+        message: 'Single User fetched successfully!',
+        data: result,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User Id not found!',
+        },
+      });
+    }
   } catch (error: any) {
     res.status(500).json({
       success: false,
       message: 'Something Want Worng!!',
       error: {
         code: 500,
-        description: `${error.message} | User not found!`,
+        description: error.message,
       },
     });
   }
 };
 
+const updateUserInfo = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userData = req.body;
+    const result = await userServices.updateUserInfo(id, userData);
+    if (result) {
+      userData.password = '';
+      res.status(200).json({
+        success: true,
+        message: 'User updated successfully!',
+        data: userData,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User Id not found!',
+        },
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: 'Something Want Worng!!',
+      error: {
+        code: 500,
+        description: error.message,
+      },
+    });
+  }
+};
+
+const deleteUserInfo = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const result = await userServices.deleteUserInfo(id);
+    if (result) {
+      res.status(200).json({
+        success: true,
+        message: 'User deleted successfully!',
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User Id not found!',
+        },
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: 'Something Want Worng!!',
+      error: {
+        code: 500,
+        description: error.message,
+      },
+    });
+  }
+}
+
 export const userControllers = {
   createUser,
   getallUsers,
   getSingleData,
+  updateUserInfo,
+  deleteUserInfo
 };

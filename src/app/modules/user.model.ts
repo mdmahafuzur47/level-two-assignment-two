@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IAddress, IFullName, IUser } from './user/user.interface';
+import { IAddress, IFullName, IUser, IsUserIdExistsModel } from './user/user.interface';
 import bcrypt from 'bcrypt';
 import config from '../config';
 
@@ -14,7 +14,7 @@ const addressSchema = new Schema<IAddress>({
   country: { type: 'string', required: true },
 });
 
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema<IUser,IsUserIdExistsModel>({
   userId: { type: Number, unique: true, required: true },
   username: { type: String, unique: true, required: true, trim: true },
   password: { type: String, required: true },
@@ -22,6 +22,7 @@ const userSchema = new Schema<IUser>({
   age: { type: Number, required: true },
   email: { type: String, required: true },
   isActive: { type: Boolean, required: true },
+  hobbies: { type: [String], required: true },
   address: { type: addressSchema, required: true },
 });
 
@@ -38,4 +39,9 @@ userSchema.post('save', function (doc, next) {
   next();
 });
 
-export const UserModel = model<IUser>('User', userSchema);
+userSchema.statics.isUserExists = async function(id: string){
+ const userExists = await UserModel.findOne({userId:id})
+ return !!userExists; 
+}
+
+export const UserModel = model<IUser,IsUserIdExistsModel>('User', userSchema);

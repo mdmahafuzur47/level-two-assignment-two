@@ -1,3 +1,5 @@
+import { Model } from "mongoose";
+
 export type IAddress = {
   street: string;
   city: string;
@@ -19,3 +21,8 @@ export type IUser = {
   hobbies: string[];
   address: IAddress;
 };
+
+export interface  IsUserIdExistsModel extends Model<IUser>{
+  isUserExists(id: string) : Promise<IUser | null>;
+}
+
