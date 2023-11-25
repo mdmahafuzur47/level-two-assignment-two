@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import { userServices } from './user.service';
 import { UserZodSchema } from './user.validator';
+import { IOrder, IUser } from './user.interface';
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -214,12 +215,20 @@ const getTotalPrice = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const result = await userServices.getTotalPrice(id);
+    
     if (result) {
+      const totalOrderPrice: number = result.reduce((total: number, user: IUser) => {
+        const orderTotal : any = user.orders?.reduce((priceTotal: number,order: IOrder) => {
+          return priceTotal + order.price * order.quantity;
+        },0)
+        return total + orderTotal;
+      },0) ;
+      console.log(totalOrderPrice)  
       res.status(200).json({
         success: true,
         message: 'Total Price fetched successfully!',
         data: {
-          totalPrice: result,
+          totalPrice: totalOrderPrice,
         },
       });
     } else {

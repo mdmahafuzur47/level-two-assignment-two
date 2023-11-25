@@ -70,15 +70,10 @@ const getTotalPrice = async (id: string) => {
   if (await UserModel.isUserExists(id)) {
     const result = await UserModel.aggregate([
       {
-        $match: { userId: id },
-      },
-      {
-        $group: {
-          _id: '$orders.productName',
-          totalPrice: { $avg: '$orders.price' },
-        },
-      },
+        $match: { userId: Number(id) },
+      }
     ]);
+    return result;
   } else {
     return false;
   }
