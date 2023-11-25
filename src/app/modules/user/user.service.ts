@@ -1,5 +1,5 @@
 import { UserModel } from '../user.model';
-import { IUser } from './user.interface';
+import { IOrder, IUser } from './user.interface';
 
 const createUser = async (user: IUser) => {
   const result = await UserModel.create(user);
@@ -44,10 +44,34 @@ const deleteUserInfo = async (id: string) => {
   }
 };
 
+const addOrder = async(id: string,orderData: IOrder) => {
+  if (await UserModel.isUserExists(id)) {
+    const result = await UserModel.updateOne(
+      { userId: id },
+      { $push: { orders: orderData } },
+      { new: true },
+    );
+    return result;
+  } else {
+    return false;
+  }
+}
+
+const getOrders = async(id: string) => {
+  if(await UserModel.isUserExists(id)) {
+    const result = await UserModel.findOne({userId: id});
+    return result?.orders ? result.orders : null;
+  }else{  
+    return false;
+  }
+}
+
 export const userServices = {
   createUser,
   getallUsers,
   getSingleData,
   updateUserInfo,
   deleteUserInfo,
+  addOrder,
+  getOrders
 };

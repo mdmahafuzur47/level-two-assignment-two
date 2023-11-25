@@ -16,7 +16,7 @@ const createUser = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: 'Something Want Worng!!',
+      message: 'Something Went Worng!!',
       error: {
         code: 500,
         description: error.message,
@@ -36,7 +36,7 @@ const getallUsers = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: 'Something Want Worng!!',
+      message: 'Something Went Worng!!',
       error: {
         code: 500,
         description: error.message,
@@ -68,7 +68,7 @@ const getSingleData = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: 'Something Want Worng!!',
+      message: 'Something Went Worng!!',
       error: {
         code: 500,
         description: error.message,
@@ -102,7 +102,7 @@ const updateUserInfo = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: 'Something Want Worng!!',
+      message: 'Something Went Worng!!',
       error: {
         code: 500,
         description: error.message,
@@ -134,19 +134,88 @@ const deleteUserInfo = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: 'Something Want Worng!!',
+      message: 'Something Went Worng!!',
       error: {
         code: 500,
         description: error.message,
       },
     });
   }
-}
+};
+
+const addOrder = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const orderData = req.body;
+    const result = await userServices.addOrder(id, orderData);
+    if (result) {
+      res.status(200).json({
+        success: true,
+        message: 'Order added successfully!',
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User Id not found!',
+        },
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: 'Something Went Worng!!',
+      error: {
+        code: 500,
+        description: error.message,
+      },
+    });
+  }
+};
+
+const getOrders = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const result = await userServices.getOrders(id);
+    if (result) {
+      res.status(200).json({
+        success: true,
+        message: 'Orders fetched successfully!',
+        data: result? {
+          orders: result,
+        }: null,
+      });
+    }else {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User Id not found!',
+        },
+      });
+    }
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: 'Something Went Worng!!',
+      error: {
+        code: 500,
+        description: error.message,
+      },
+    });
+  }
+};
 
 export const userControllers = {
   createUser,
   getallUsers,
   getSingleData,
   updateUserInfo,
-  deleteUserInfo
+  deleteUserInfo,
+  addOrder,
+  getOrders,
 };

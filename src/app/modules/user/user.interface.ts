@@ -10,6 +10,12 @@ export type IFullName = {
   lastName: string;
 };
 
+export type IOrder = {
+  productName: string;
+  price: number;
+  quantity: number;
+}
+
 export type IUser = {
   userId: number;
   username: string;
@@ -20,6 +26,7 @@ export type IUser = {
   isActive: boolean;
   hobbies: string[];
   address: IAddress;
+  orders?: IOrder[];
 };
 
 export interface  IsUserIdExistsModel extends Model<IUser>{

@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IAddress, IFullName, IUser, IsUserIdExistsModel } from './user/user.interface';
+import { IAddress, IFullName, IUser, IsUserIdExistsModel, IOrder } from './user/user.interface';
 import bcrypt from 'bcrypt';
 import config from '../config';
 
@@ -14,6 +14,12 @@ const addressSchema = new Schema<IAddress>({
   country: { type: 'string', required: true },
 });
 
+const orderSchema = new Schema<IOrder>({
+  productName: { type:'string', required: true },
+  price: { type: 'number', required: true },
+  quantity: { type: 'number', required: true },
+})
+
 const userSchema = new Schema<IUser,IsUserIdExistsModel>({
   userId: { type: Number, unique: true, required: true },
   username: { type: String, unique: true, required: true, trim: true },
@@ -24,6 +30,7 @@ const userSchema = new Schema<IUser,IsUserIdExistsModel>({
   isActive: { type: Boolean, required: true },
   hobbies: { type: [String], required: true },
   address: { type: addressSchema, required: true },
+  orders: [orderSchema]
 });
 
 userSchema.pre('save', async function (next) {
