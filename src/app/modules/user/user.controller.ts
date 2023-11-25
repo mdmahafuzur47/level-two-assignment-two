@@ -184,11 +184,11 @@ const getOrders = async (req: Request, res: Response) => {
       res.status(200).json({
         success: true,
         message: 'Orders fetched successfully!',
-        data: result? {
+        data: {
           orders: result,
-        }: null,
+        },
       });
-    }else {
+    } else {
       res.status(404).json({
         success: false,
         message: 'User not found',
