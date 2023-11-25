@@ -14,6 +14,5 @@ async function connect() {
   }
 }
 
-//
 
 connect();
