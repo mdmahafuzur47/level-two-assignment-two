@@ -210,6 +210,40 @@ const getOrders = async (req: Request, res: Response) => {
   }
 };
 
+const getTotalPrice = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const result = await userServices.getTotalPrice(id);
+    if (result) {
+      res.status(200).json({
+        success: true,
+        message: 'Total Price fetched successfully!',
+        data: {
+          totalPrice: result,
+        },
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User Id not found!',
+        },
+      });
+    }
+  } catch (error:any) {
+    res.status(500).json({
+      success: false,
+      message: 'Something Went Worng!!',
+      error: {
+        code: 500,
+        description: error.message,
+      },
+    });
+  }
+};
+
 export const userControllers = {
   createUser,
   getallUsers,
@@ -218,4 +252,5 @@ export const userControllers = {
   deleteUserInfo,
   addOrder,
   getOrders,
+  getTotalPrice
 };

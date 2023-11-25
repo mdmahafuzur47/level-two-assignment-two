@@ -44,7 +44,7 @@ const deleteUserInfo = async (id: string) => {
   }
 };
 
-const addOrder = async(id: string,orderData: IOrder) => {
+const addOrder = async (id: string, orderData: IOrder) => {
   if (await UserModel.isUserExists(id)) {
     const result = await UserModel.updateOne(
       { userId: id },
@@ -55,16 +55,34 @@ const addOrder = async(id: string,orderData: IOrder) => {
   } else {
     return false;
   }
-}
+};
 
-const getOrders = async(id: string) => {
-  if(await UserModel.isUserExists(id)) {
-    const result = await UserModel.findOne({userId: id});
+const getOrders = async (id: string) => {
+  if (await UserModel.isUserExists(id)) {
+    const result = await UserModel.findOne({ userId: id });
     return result?.orders ? result.orders : null;
-  }else{  
+  } else {
     return false;
   }
-}
+};
+
+const getTotalPrice = async (id: string) => {
+  if (await UserModel.isUserExists(id)) {
+    const result = await UserModel.aggregate([
+      {
+        $match: { userId: id },
+      },
+      {
+        $group: {
+          _id: '$orders.productName',
+          totalPrice: { $avg: '$orders.price' },
+        },
+      },
+    ]);
+  } else {
+    return false;
+  }
+};
 
 export const userServices = {
   createUser,
@@ -73,5 +91,6 @@ export const userServices = {
   updateUserInfo,
   deleteUserInfo,
   addOrder,
-  getOrders
+  getOrders,
+  getTotalPrice,
 };
